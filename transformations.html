@@ -50,7 +50,7 @@
   <section class="section" style="padding-top: 40px;">
     <div class="container">
       <div class="flex-center" style="margin-bottom: clamp(28px, 4vw, 48px); flex-direction: column; gap: 10px;">
-        <span class="eyebrow">All 30 Transformations</span>
+        <span class="eyebrow">All 29 Transformations</span>
         <p style="font-size: 0.85rem; color: var(--text-2); margin: 0;">Click any tile to open it full size</p>
       </div>
       <div class="gallery" id="gallery-grid">
@@ -128,7 +128,7 @@
     (function () {
       const grid = document.getElementById('gallery-grid');
       const frag = document.createDocumentFragment();
-      for (let i = 1; i <= 30; i++) {
+      for (let i = 1; i <= 29; i++) {
         const num = String(i).padStart(2, '0');
         const tile = document.createElement('div');
         tile.className = 'tile';
