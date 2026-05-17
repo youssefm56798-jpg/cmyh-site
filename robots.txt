@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://cmyh-onlinefitnesscoaching.com/sitemap.xml
