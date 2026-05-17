@@ -120,17 +120,24 @@
         combo: { en: 'Training + Nutrition', ar: 'تدريب + تغذية' }
       };
       const DURATIONS = [
-        { id: '1mo', months: 1, price: 500, en: 'One Month', ar: 'شهر واحد' },
-        { id: '2mo', months: 2, price: 800, en: 'Two Months', ar: 'شهرين' },
-        { id: '3mo', months: 3, price: 1400, en: 'Three Months', ar: 'ثلاث شهور', popular: true },
-        { id: '6mo', months: 6, price: 2500, en: 'Six Months', ar: 'ست شهور', best: true }
+        { id: '1mo', months: 1, en: 'One Month', ar: 'شهر واحد' },
+        { id: '2mo', months: 2, en: 'Two Months', ar: 'شهرين' },
+        { id: '3mo', months: 3, en: 'Three Months', ar: 'ثلاث شهور', popular: true },
+        { id: '6mo', months: 6, en: 'Six Months', ar: 'ست شهور', best: true }
       ];
+      // Prices in EGP, scraped verbatim from the old Easyorders store
+      const PRICES = {
+        training:  { '1mo': 500, '2mo':  800, '3mo': 1400, '6mo': 2500 },
+        nutrition: { '1mo': 500, '2mo':  800, '3mo': 1400, '6mo': 2500 },
+        combo:     { '1mo': 800, '2mo': 1400, '3mo': 2200, '6mo': 4000 }
+      };
 
       const grid = document.getElementById('products-grid');
       const types = ['training', 'nutrition', 'combo'];
       let html = '';
       types.forEach((type) => {
         DURATIONS.forEach((d) => {
+          const price = PRICES[type][d.id];
           const sku = `${type}-${d.id}`;
           const nameEn = `${d.en} · ${TYPES[type].en}`;
           const nameAr = `${d.ar} · ${TYPES[type].ar}`;
@@ -143,12 +150,12 @@
                      data-product="${sku}"
                      data-name="${nameEn}"
                      data-duration="${d.en}"
-                     data-price="${d.price}"
+                     data-price="${price}"
                      data-type="${type}">
               ${badge}
               <div class="product-type" data-en="${TYPES[type].en}" data-ar="${TYPES[type].ar}">${TYPES[type].en}</div>
               <div class="product-name" data-en="${d.en}" data-ar="${d.ar}">${d.en}</div>
-              <div class="product-price">${d.price.toLocaleString()} <span style="font-size:0.6em;color:var(--text-2)">EGP</span></div>
+              <div class="product-price">${price.toLocaleString()} <span style="font-size:0.6em;color:var(--text-2)">EGP</span></div>
               <div class="product-price-unit" data-en="for ${d.months} ${d.months === 1 ? 'month' : 'months'}" data-ar="لمدة ${d.months} ${d.months === 1 ? 'شهر' : 'شهور'}">for ${d.months} ${d.months === 1 ? 'month' : 'months'}</div>
               <ul class="product-includes">${featuresHtml}</ul>
               <button data-add-to-cart class="btn btn-primary product-add">
