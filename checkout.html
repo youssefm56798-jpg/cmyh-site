@@ -98,7 +98,7 @@
                   <input type="radio" name="payment" value="instapay" />
                   <div class="payment-option-logo"><img src="assets/images/instapay.png" alt="InstaPay"></div>
                   <div class="payment-option-name" data-en="InstaPay" data-ar="إنستا باي">InstaPay</div>
-                  <div class="payment-option-num">011556066831</div>
+                  <div class="payment-option-num">01556066831</div>
                 </label>
               </div>
 
@@ -296,7 +296,7 @@
 
       // Build order summary
       const total = cart.reduce((s, i) => s + i.price * i.qty, 0);
-      const method = form.payment.value === 'instapay' ? 'InstaPay (011556066831)' : 'Vodafone Cash (01064908551)';
+      const method = form.payment.value === 'instapay' ? 'InstaPay (01556066831)' : 'Vodafone Cash (01064908551)';
       const orderId = 'CMYH-' + Date.now().toString(36).toUpperCase();
       const itemsLines = cart.map((i) => `• ${i.name} × ${i.qty} = ${(i.price * i.qty).toLocaleString()} EGP`).join('\n');
       const summary = [
