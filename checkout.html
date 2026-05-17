@@ -275,29 +275,18 @@
       }
     });
 
-    // --- Form open time (anti-bot time-check) ---
-    const formOpenedAt = performance.now();
-
-    // --- Submit → silent email to coach + success modal ---
-    document.getElementById('checkout-form').addEventListener('submit', async (e) => {
+    // --- Submit → instant WhatsApp + success modal, fire-and-forget email ---
+    document.getElementById('checkout-form').addEventListener('submit', (e) => {
       e.preventDefault();
       const form = e.target;
-      const submitBtn = document.getElementById('checkout-submit');
       const cart = window.CMYH ? window.CMYH.readCart() : [];
       if (!cart.length) return;
 
-      // Anti-bot: honeypot field must stay empty
-      if (form._honey && form._honey.value) {
-        // Silently swallow the submission — bot caught
-        return;
-      }
-      // Anti-bot: form must have been open at least 2.5 seconds before submit
-      if (performance.now() - formOpenedAt < 2500) {
-        // Likely an automated submit — fake success but don't actually send
-        return;
-      }
+      // Anti-bot: honeypot field must stay empty (bots fill it, humans never see it)
+      if (form._honey && form._honey.value) return;
 
-      if (!form.name.value || !form.phone.value) {
+      // Validation
+      if (!form.name.value.trim() || !form.phone.value.trim()) {
         alert('Please fill in your name and WhatsApp number.');
         return;
       }
@@ -305,10 +294,10 @@
         if (!confirm('You haven’t attached the transfer screenshot. Continue anyway and send it via WhatsApp?')) return;
       }
 
+      // Build order summary
       const total = cart.reduce((s, i) => s + i.price * i.qty, 0);
       const method = form.payment.value === 'instapay' ? 'InstaPay (011556066831)' : 'Vodafone Cash (01064908551)';
       const orderId = 'CMYH-' + Date.now().toString(36).toUpperCase();
-
       const itemsLines = cart.map((i) => `• ${i.name} × ${i.qty} = ${(i.price * i.qty).toLocaleString()} EGP`).join('\n');
       const summary = [
         `New CMYH order ${orderId}`,
@@ -327,59 +316,43 @@
           ? `Transfer screenshot attached: ${fileInput.files[0].name}`
           : 'Customer will send the transfer screenshot via WhatsApp.'
       ].filter(Boolean).join('\n');
-
-      // Disable button while submitting
-      submitBtn.disabled = true;
-      const originalLabel = submitBtn.innerHTML;
-      submitBtn.innerHTML = '<span>Sending…</span>';
-
-      // --- 1. Silent email to coach via FormSubmit AJAX endpoint ---
-      try {
-        const fd = new FormData();
-        fd.append('_subject', `New CMYH Order — ${orderId} — ${form.name.value} (${total.toLocaleString()} EGP)`);
-        fd.append('_template', 'table');
-        fd.append('_captcha', 'false');
-        fd.append('Order ID', orderId);
-        fd.append('Name', form.name.value);
-        fd.append('Phone (WhatsApp)', form.phone.value);
-        if (form.email.value) fd.append('Email', form.email.value);
-        fd.append('Payment Method', method);
-        fd.append('Total (EGP)', total.toLocaleString());
-        fd.append('Items', itemsLines);
-        fd.append('Summary', summary);
-        if (fileInput.files.length) fd.append('attachment', fileInput.files[0]);
-
-        await fetch('https://formsubmit.co/ajax/coachmohamedyoussef531@gmail.com', {
-          method: 'POST',
-          body: fd
-        });
-      } catch (err) {
-        // Email failed — fall through. WhatsApp + UI still continue so the
-        // customer is never blocked by a third-party outage.
-        console.warn('Order email failed', err);
-      }
-
-      // --- 2. Open WhatsApp with the same summary pre-filled (so the coach
-      //         also gets it in their chat as a fast notification, and the
-      //         customer can attach the screenshot directly there) ---
       const waUrl = 'https://wa.me/201064908551?text=' + encodeURIComponent(summary);
+
+      // --- 1. Open WhatsApp IMMEDIATELY (synchronous click context to dodge popup blockers) ---
       window.open(waUrl, '_blank', 'noopener');
 
-      // --- 3. Show success modal + clear cart ---
-      document.getElementById('order-success-id').textContent = (
-        (document.documentElement.lang === 'ar' ? 'رقم الطلب #' : 'Order #') + orderId
-      );
+      // --- 2. Show success modal IMMEDIATELY + clear cart ---
+      document.getElementById('order-success-id').textContent = 'Order #' + orderId;
       document.getElementById('order-success-wa').href = waUrl;
       const modal = document.getElementById('order-success');
       modal.classList.add('open');
       modal.setAttribute('aria-hidden', 'false');
       window.scrollTo({ top: 0, behavior: 'smooth' });
-
       if (window.CMYH && window.CMYH.clearCart) window.CMYH.clearCart();
+
+      // --- 3. Fire-and-forget email to coach (no await — user already sees success) ---
+      const fd = new FormData();
+      fd.append('_subject', `New CMYH Order — ${orderId} — ${form.name.value} (${total.toLocaleString()} EGP)`);
+      fd.append('_template', 'table');
+      fd.append('_captcha', 'false');
+      fd.append('Order ID', orderId);
+      fd.append('Name', form.name.value);
+      fd.append('Phone (WhatsApp)', form.phone.value);
+      if (form.email.value) fd.append('Email', form.email.value);
+      fd.append('Payment Method', method);
+      fd.append('Total (EGP)', total.toLocaleString());
+      fd.append('Items', itemsLines);
+      fd.append('Summary', summary);
+      if (fileInput.files.length) fd.append('attachment', fileInput.files[0]);
+      fetch('https://formsubmit.co/ajax/coachmohamedyoussef531@gmail.com', {
+        method: 'POST',
+        body: fd,
+        mode: 'no-cors'
+      }).catch((err) => console.warn('Order email failed (WhatsApp still went through)', err));
+
+      // Reset form state so a subsequent order starts clean
       form.reset();
       preview.style.display = 'none';
-      submitBtn.disabled = false;
-      submitBtn.innerHTML = originalLabel;
     });
   </script>
   <script src="script.js"></script>
