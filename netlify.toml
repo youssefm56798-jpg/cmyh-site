@@ -1,0 +1,56 @@
+# CMYH — Netlify config
+# Drag-and-drop the parent `site/` folder onto Netlify, or connect via Git.
+
+[build]
+  publish = "."
+
+# Pretty URLs: /programs works as well as /programs.html
+[[redirects]]
+  from = "/programs"
+  to   = "/programs.html"
+  status = 200
+[[redirects]]
+  from = "/transformations"
+  to   = "/transformations.html"
+  status = 200
+[[redirects]]
+  from = "/reviews"
+  to   = "/reviews.html"
+  status = 200
+[[redirects]]
+  from = "/about"
+  to   = "/about.html"
+  status = 200
+[[redirects]]
+  from = "/contact"
+  to   = "/contact.html"
+  status = 200
+[[redirects]]
+  from = "/checkout"
+  to   = "/checkout.html"
+  status = 200
+
+# Long-term caching for fingerprinted assets
+[[headers]]
+  for = "/assets/images/*"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"
+
+[[headers]]
+  for = "/styles.css"
+  [headers.values]
+    Cache-Control = "public, max-age=86400, must-revalidate"
+
+[[headers]]
+  for = "/script.js"
+  [headers.values]
+    Cache-Control = "public, max-age=86400, must-revalidate"
+
+# Security + perf headers for HTML
+[[headers]]
+  for = "/*.html"
+  [headers.values]
+    X-Content-Type-Options = "nosniff"
+    Referrer-Policy = "strict-origin-when-cross-origin"
+    Permissions-Policy = "interest-cohort=()"
+    Cache-Control = "public, max-age=300, must-revalidate"

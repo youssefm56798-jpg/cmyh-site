@@ -5,9 +5,14 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Checkout — CMYH | Coach Mohamed Youssef Hafez</title>
   <meta name="description" content="Complete your CMYH order. Pay via Vodafone Cash or InstaPay and upload a screenshot of the transfer." />
-  <meta name="robots" content="noindex" />
+  <meta name="robots" content="noindex, follow" />
   <meta name="theme-color" content="#000000" />
   <link rel="icon" type="image/svg+xml" href="favicon.svg" />
+  <meta property="og:type" content="website" />
+  <meta property="og:title" content="Checkout — CMYH" />
+  <meta property="og:description" content="Complete your CMYH order." />
+  <meta property="og:image" content="assets/images/hero.webp" />
+  <link rel="canonical" href="https://cmyh-onlinefitnesscoaching.com/checkout.html" />
   <link rel="preconnect" href="https://api.fontshare.com" crossorigin />
   <link rel="stylesheet" href="styles.css" />
 </head>
@@ -23,6 +28,7 @@
       <li><a href="transformations.html" data-en="Transformations" data-ar="التحولات">Transformations</a></li>
       <li><a href="reviews.html" data-en="Reviews" data-ar="آراء العملاء">Reviews</a></li>
       <li><a href="about.html" data-en="About" data-ar="عن الكوتش">About</a></li>
+      <li><a href="articles/index.html" data-en="Articles" data-ar="مقالات">Articles</a></li>
       <li><a href="contact.html" data-en="Contact" data-ar="تواصل">Contact</a></li>
     </ul>
     <div class="nav-actions">
@@ -53,10 +59,18 @@
       <div id="checkout-flow" style="display:none;">
         <div class="checkout-grid">
 
-          <!-- LEFT — FORM -->
-          <form id="checkout-form" autocomplete="on" novalidate>
+          <!-- LEFT — FORM (Netlify Forms: captures submission + screenshot, emails coach) -->
+          <form id="checkout-form" name="checkout" method="POST" data-netlify="true" data-netlify-honeypot="bot-field" enctype="multipart/form-data" autocomplete="on" novalidate>
+            <input type="hidden" name="form-name" value="checkout" />
+            <!-- Hidden fields populated at submit time — declared so Netlify detects them at build -->
+            <input type="hidden" name="order-id" value="" />
+            <input type="hidden" name="items" value="" />
+            <input type="hidden" name="total-egp" value="" />
+            <input type="hidden" name="summary" value="" />
             <!-- Honeypot: bots fill it, humans never see it -->
-            <input type="text" name="_honey" tabindex="-1" autocomplete="off" aria-hidden="true" style="position:absolute; left:-9999px; height:0; width:0; opacity:0;" />
+            <p style="position:absolute; left:-9999px; height:0; width:0; opacity:0;" aria-hidden="true">
+              <label>Don't fill this out: <input name="bot-field" tabindex="-1" autocomplete="off" /></label>
+            </p>
 
             <!-- Step 1: Your info -->
             <fieldset style="border:0; padding: 0; margin-bottom: 36px;">
@@ -70,8 +84,8 @@
                 </div>
                 <div class="grid grid-2" style="gap: 14px;">
                   <div>
-                    <label data-en="WhatsApp" data-ar="واتساب">WhatsApp</label>
-                    <input required name="phone" type="tel" autocomplete="tel" inputmode="tel" placeholder="+20 100 000 0000" />
+                    <label data-en="WhatsApp" data-ar="واتساب">WhatsApp <span style="color: var(--red)">*</span></label>
+                    <input required name="phone" type="tel" autocomplete="tel" inputmode="tel" pattern="[0-9+\s\-()]{8,}" minlength="8" title="Enter a valid WhatsApp number (digits, +, -, spaces)" placeholder="+20 100 000 0000" />
                   </div>
                   <div>
                     <label data-en="Email (optional)" data-ar="إيميل (اختياري)">Email (optional)</label>
@@ -275,26 +289,35 @@
       }
     });
 
-    // --- Submit → instant WhatsApp + success modal, fire-and-forget email ---
-    document.getElementById('checkout-form').addEventListener('submit', (e) => {
+    // --- Submit → silently POST to Netlify Forms (email + screenshot), then show success ---
+    document.getElementById('checkout-form').addEventListener('submit', async (e) => {
       e.preventDefault();
       const form = e.target;
+      const submitBtn = document.getElementById('checkout-submit');
       const cart = window.CMYH ? window.CMYH.readCart() : [];
       if (!cart.length) return;
 
-      // Anti-bot: honeypot field must stay empty (bots fill it, humans never see it)
-      if (form._honey && form._honey.value) return;
+      // Anti-bot: Netlify honeypot must stay empty
+      if (form['bot-field'] && form['bot-field'].value) return;
 
-      // Validation
-      if (!form.name.value.trim() || !form.phone.value.trim()) {
-        alert('Please fill in your name and WhatsApp number.');
+      // Validation — WhatsApp number is mandatory
+      if (!form.name.value.trim()) {
+        alert('Please enter your full name.');
+        form.name.focus();
+        return;
+      }
+      const phoneDigits = form.phone.value.trim().replace(/\D/g, '');
+      if (phoneDigits.length < 8) {
+        alert('Please enter a valid WhatsApp number — Coach Mohamed needs it to contact you within 48 hours.');
+        form.phone.focus();
         return;
       }
       if (!fileInput.files.length) {
-        if (!confirm('You haven’t attached the transfer screenshot. Continue anyway and send it via WhatsApp?')) return;
+        alert('Please attach the transfer screenshot so we can verify your payment.');
+        return;
       }
 
-      // Build order summary
+      // Build order metadata
       const total = cart.reduce((s, i) => s + i.price * i.qty, 0);
       const method = form.payment.value === 'instapay' ? 'InstaPay (01556066831)' : 'Vodafone Cash (01064908551)';
       const orderId = 'CMYH-' + Date.now().toString(36).toUpperCase();
@@ -312,47 +335,41 @@
         '',
         `Total: ${total.toLocaleString()} EGP`,
         '',
-        fileInput.files.length
-          ? `Transfer screenshot attached: ${fileInput.files[0].name}`
-          : 'Customer will send the transfer screenshot via WhatsApp.'
+        `Transfer screenshot attached: ${fileInput.files[0].name}`
       ].filter(Boolean).join('\n');
-      const waUrl = 'https://wa.me/201064908551?text=' + encodeURIComponent(summary);
 
-      // --- 1. Open WhatsApp IMMEDIATELY (synchronous click context to dodge popup blockers) ---
-      window.open(waUrl, '_blank', 'noopener');
+      // Populate hidden fields so Netlify receives them alongside the file
+      form['order-id'].value = orderId;
+      form['items'].value = itemsLines;
+      form['total-egp'].value = total.toLocaleString();
+      form['summary'].value = summary;
 
-      // --- 2. Show success modal IMMEDIATELY + clear cart ---
-      document.getElementById('order-success-id').textContent = 'Order #' + orderId;
-      document.getElementById('order-success-wa').href = waUrl;
-      const modal = document.getElementById('order-success');
-      modal.classList.add('open');
-      modal.setAttribute('aria-hidden', 'false');
-      window.scrollTo({ top: 0, behavior: 'smooth' });
-      if (window.CMYH && window.CMYH.clearCart) window.CMYH.clearCart();
+      // Disable button + show "Sending..." state
+      submitBtn.disabled = true;
+      const originalBtnHTML = submitBtn.innerHTML;
+      submitBtn.innerHTML = '<span>Sending order…</span>';
 
-      // --- 3. Fire-and-forget email to coach (no await — user already sees success) ---
-      const fd = new FormData();
-      fd.append('_subject', `New CMYH Order — ${orderId} — ${form.name.value} (${total.toLocaleString()} EGP)`);
-      fd.append('_template', 'table');
-      fd.append('_captcha', 'false');
-      fd.append('Order ID', orderId);
-      fd.append('Name', form.name.value);
-      fd.append('Phone (WhatsApp)', form.phone.value);
-      if (form.email.value) fd.append('Email', form.email.value);
-      fd.append('Payment Method', method);
-      fd.append('Total (EGP)', total.toLocaleString());
-      fd.append('Items', itemsLines);
-      fd.append('Summary', summary);
-      if (fileInput.files.length) fd.append('attachment', fileInput.files[0]);
-      fetch('https://formsubmit.co/ajax/coachmohamedyoussef531@gmail.com', {
-        method: 'POST',
-        body: fd,
-        mode: 'no-cors'
-      }).catch((err) => console.warn('Order email failed (WhatsApp still went through)', err));
+      try {
+        const fd = new FormData(form);
+        const res = await fetch('/', { method: 'POST', body: fd });
+        if (!res.ok) throw new Error('Submission failed: HTTP ' + res.status);
 
-      // Reset form state so a subsequent order starts clean
-      form.reset();
-      preview.style.display = 'none';
+        // Success — show confirmation modal, clear cart
+        document.getElementById('order-success-id').textContent = 'Order #' + orderId;
+        const modal = document.getElementById('order-success');
+        modal.classList.add('open');
+        modal.setAttribute('aria-hidden', 'false');
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+        if (window.CMYH && window.CMYH.clearCart) window.CMYH.clearCart();
+        form.reset();
+        preview.style.display = 'none';
+      } catch (err) {
+        console.error('Order submission error:', err);
+        alert('Sorry — we couldn’t send your order. Please check your connection and try again, or contact Coach Mohamed directly on WhatsApp: +20 106 490 8551');
+      } finally {
+        submitBtn.disabled = false;
+        submitBtn.innerHTML = originalBtnHTML;
+      }
     });
   </script>
   <script src="script.js"></script>
