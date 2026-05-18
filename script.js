@@ -11,14 +11,16 @@
 (function () {
   'use strict';
 
-  /* ---------- Smooth page transitions (fade-out on leave) ---------- */
+  /* ---------- Smooth page transitions (fade-out on leave) ----------
+     Lets the browser handle navigation natively (works in Instagram/Facebook
+     in-app browsers), just adds the fade class on the way out. View Transitions
+     API handles the fade in Chrome 126+ via CSS; this is the fallback. */
   function initPageTransitions() {
     document.addEventListener('click', (e) => {
       const link = e.target.closest('a');
       if (!link) return;
       const url = link.getAttribute('href');
       if (!url) return;
-      // Skip external links, anchors, new-tab, mailto/tel/wa, modifier clicks
       if (link.target === '_blank') return;
       if (e.ctrlKey || e.metaKey || e.shiftKey || e.altKey) return;
       if (e.button !== 0) return;
@@ -26,15 +28,10 @@
         url.startsWith('#') ||
         url.startsWith('mailto:') ||
         url.startsWith('tel:') ||
-        url.startsWith('http://') ||
-        url.startsWith('https://') ||
-        url.startsWith('//') ||
         url.startsWith('javascript:')
       ) return;
-      // Same-origin internal navigation — fade out then navigate
-      e.preventDefault();
+      // Same-origin internal navigation — just trigger the fade, let browser navigate
       document.body.classList.add('is-leaving');
-      window.setTimeout(() => { window.location.href = url; }, 240);
     });
   }
 
