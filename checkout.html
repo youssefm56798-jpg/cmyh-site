@@ -15,6 +15,23 @@
   <link rel="canonical" href="https://cmyh-onlinefitnesscoaching.com/checkout.html" />
   <link rel="preconnect" href="https://api.fontshare.com" crossorigin />
   <link rel="stylesheet" href="styles.css" />
+  <!-- Meta Pixel Code -->
+  <script>
+  !function(f,b,e,v,n,t,s)
+  {if(f.fbq)return;n=f.fbq=function(){n.callMethod?
+  n.callMethod.apply(n,arguments):n.queue.push(arguments)};
+  if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';
+  n.queue=[];t=b.createElement(e);t.async=!0;
+  t.src=v;s=b.getElementsByTagName(e)[0];
+  s.parentNode.insertBefore(t,s)}(window, document,'script',
+  'https://connect.facebook.net/en_US/fbevents.js');
+  fbq('init', '1489268915935030');
+  fbq('track', 'PageView');
+  </script>
+  <noscript><img height="1" width="1" style="display:none"
+  src="https://www.facebook.com/tr?id=1489268915935030&ev=PageView&noscript=1"
+  /></noscript>
+  <!-- End Meta Pixel Code -->
 </head>
 <body>
 
@@ -242,8 +259,24 @@
       total.textContent = cart.reduce((s, i) => s + i.price * i.qty, 0).toLocaleString();
     }
 
+    // Fire Meta Pixel InitiateCheckout once per page-load if cart has items
+    let _icFired = false;
+    function fireInitiateCheckout() {
+      if (_icFired) return;
+      const cart = window.CMYH ? window.CMYH.readCart() : [];
+      if (!cart.length || !window.fbq) return;
+      _icFired = true;
+      window.fbq('track', 'InitiateCheckout', {
+        content_ids: cart.map(i => i.id),
+        contents: cart.map(i => ({ id: i.id, quantity: i.qty })),
+        num_items: cart.reduce((s, i) => s + i.qty, 0),
+        value: cart.reduce((s, i) => s + i.price * i.qty, 0),
+        currency: 'EGP'
+      });
+    }
+
     // Render after cart system boots
-    window.addEventListener('DOMContentLoaded', () => setTimeout(renderCheckout, 60));
+    window.addEventListener('DOMContentLoaded', () => setTimeout(() => { renderCheckout(); fireInitiateCheckout(); }, 60));
     window.addEventListener('cmyh:cart:update', renderCheckout);
 
     // --- File preview ---
@@ -353,6 +386,18 @@
         const fd = new FormData(form);
         const res = await fetch('/', { method: 'POST', body: fd });
         if (!res.ok) throw new Error('Submission failed: HTTP ' + res.status);
+
+        // Meta Pixel — Purchase event (the conversion that matters most for ad optimization)
+        if (window.fbq) {
+          window.fbq('track', 'Purchase', {
+            content_ids: cart.map(i => i.id),
+            contents: cart.map(i => ({ id: i.id, quantity: i.qty })),
+            num_items: cart.reduce((s, i) => s + i.qty, 0),
+            value: total,
+            currency: 'EGP',
+            order_id: orderId
+          });
+        }
 
         // Success — show confirmation modal, clear cart
         document.getElementById('order-success-id').textContent = 'Order #' + orderId;

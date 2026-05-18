@@ -256,6 +256,15 @@
     else items.push({ ...item, qty: item.qty || 1 });
     writeCart(items);
     openCart();
+    if (window.fbq) {
+      window.fbq('track', 'AddToCart', {
+        content_ids: [item.id],
+        content_name: item.name,
+        content_type: 'product',
+        value: (item.price || 0) * (item.qty || 1),
+        currency: 'EGP'
+      });
+    }
   }
   function removeFromCart(id) {
     writeCart(readCart().filter((i) => i.id !== id));

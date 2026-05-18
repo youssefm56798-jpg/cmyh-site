@@ -79,6 +79,23 @@
     ]
   }
   </script>
+  <!-- Meta Pixel Code -->
+  <script>
+  !function(f,b,e,v,n,t,s)
+  {if(f.fbq)return;n=f.fbq=function(){n.callMethod?
+  n.callMethod.apply(n,arguments):n.queue.push(arguments)};
+  if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';
+  n.queue=[];t=b.createElement(e);t.async=!0;
+  t.src=v;s=b.getElementsByTagName(e)[0];
+  s.parentNode.insertBefore(t,s)}(window, document,'script',
+  'https://connect.facebook.net/en_US/fbevents.js');
+  fbq('init', '1489268915935030');
+  fbq('track', 'PageView');
+  </script>
+  <noscript><img height="1" width="1" style="display:none"
+  src="https://www.facebook.com/tr?id=1489268915935030&ev=PageView&noscript=1"
+  /></noscript>
+  <!-- End Meta Pixel Code -->
 </head>
 <body>
 
@@ -261,12 +278,20 @@
     </div>
   </section>
 
-  <!-- ===== HOW IT WORKS — coach explains via two video walkthroughs ===== -->
+  <!-- ===== HOW IT WORKS — coach walks you through both logging methods ===== -->
   <section class="section" style="border-top: 1px solid var(--line); border-bottom: 1px solid var(--line);">
     <div class="container">
-      <div class="flex-center" style="margin-bottom: clamp(32px, 4vw, 56px); flex-direction: column; gap: 14px;">
+      <div class="flex-center" style="margin-bottom: clamp(28px, 3.6vw, 48px); flex-direction: column; gap: 14px;">
         <span class="eyebrow">Coach Mohamed walks you through it</span>
         <h2 class="h2">HOW IT WORKS</h2>
+        <p style="text-align:center; max-width: 620px; color: var(--text-2); margin: 0;">Two ways to log your week — pick whichever fits your life. Coach Mohamed reviews both the same way.</p>
+      </div>
+
+      <!-- METHOD 1 — EXCEL -->
+      <div class="flex-center" style="margin: 12px 0 22px; flex-direction: column; gap: 10px;">
+        <span class="eyebrow" style="color: var(--red);">Method 01 · For Desktop</span>
+        <h3 style="font-family: 'Boldonse', sans-serif; font-size: clamp(1.4rem, 3vw, 2rem); letter-spacing: 0.005em; text-transform: uppercase; margin: 0;">Logging in Excel</h3>
+        <p style="text-align:center; max-width: 580px; color: var(--text-3); font-size: 0.92rem; margin: 0;">The full sheets — auto-coloured progress, formulas, weekly totals. Best if you use a laptop.</p>
       </div>
 
       <div class="video-grid">
@@ -274,7 +299,7 @@
           <div class="video-wrap">
             <iframe
               src="https://www.youtube-nocookie.com/embed/6UY7M1rWwGk?rel=0"
-              title="CMYH — Nutrition &amp; Body Tracking Sheet walkthrough"
+              title="CMYH — Nutrition &amp; Body Tracking Sheet (Excel)"
               loading="lazy"
               allow="accelerometer; encrypted-media; gyroscope; picture-in-picture; web-share"
               referrerpolicy="strict-origin-when-cross-origin"
@@ -282,7 +307,7 @@
           </div>
           <figcaption class="video-caption">
             <span class="video-num">01</span>
-            <span class="video-title">Nutrition &amp; Body Tracking Sheet</span>
+            <span class="video-title">Excel · Nutrition &amp; Body Tracking</span>
           </figcaption>
         </figure>
 
@@ -290,7 +315,7 @@
           <div class="video-wrap">
             <iframe
               src="https://www.youtube-nocookie.com/embed/6EEozR55r8Y?rel=0"
-              title="CMYH — Training Sheet walkthrough"
+              title="CMYH — Training Sheet (Excel)"
               loading="lazy"
               allow="accelerometer; encrypted-media; gyroscope; picture-in-picture; web-share"
               referrerpolicy="strict-origin-when-cross-origin"
@@ -298,7 +323,48 @@
           </div>
           <figcaption class="video-caption">
             <span class="video-num">02</span>
-            <span class="video-title">Training Sheet</span>
+            <span class="video-title">Excel · Training Sheet</span>
+          </figcaption>
+        </figure>
+      </div>
+
+      <!-- METHOD 2 — NOTES -->
+      <div class="flex-center" style="margin: 64px 0 22px; flex-direction: column; gap: 10px;">
+        <span class="eyebrow" style="color: var(--red);">Method 02 · For Mobile</span>
+        <h3 style="font-family: 'Boldonse', sans-serif; font-size: clamp(1.4rem, 3vw, 2rem); letter-spacing: 0.005em; text-transform: uppercase; margin: 0;">Logging in Notes</h3>
+        <p style="text-align:center; max-width: 580px; color: var(--text-3); font-size: 0.92rem; margin: 0;">Just the phone's Notes app — no spreadsheet skills needed. Same data, simpler tool.</p>
+      </div>
+
+      <div class="video-grid">
+        <figure class="video-card">
+          <div class="video-wrap">
+            <iframe
+              src="https://www.youtube-nocookie.com/embed/ksSWJmvK7NI?rel=0"
+              title="CMYH — Nutrition Tracking via Notes app"
+              loading="lazy"
+              allow="accelerometer; encrypted-media; gyroscope; picture-in-picture; web-share"
+              referrerpolicy="strict-origin-when-cross-origin"
+              allowfullscreen></iframe>
+          </div>
+          <figcaption class="video-caption">
+            <span class="video-num">03</span>
+            <span class="video-title">Notes · Nutrition Tracking</span>
+          </figcaption>
+        </figure>
+
+        <figure class="video-card">
+          <div class="video-wrap">
+            <iframe
+              src="https://www.youtube-nocookie.com/embed/ybZNmzRYv0A?rel=0"
+              title="CMYH — Training Tracking via Notes app"
+              loading="lazy"
+              allow="accelerometer; encrypted-media; gyroscope; picture-in-picture; web-share"
+              referrerpolicy="strict-origin-when-cross-origin"
+              allowfullscreen></iframe>
+          </div>
+          <figcaption class="video-caption">
+            <span class="video-num">04</span>
+            <span class="video-title">Notes · Training Tracking</span>
           </figcaption>
         </figure>
       </div>
