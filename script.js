@@ -11,29 +11,12 @@
 (function () {
   'use strict';
 
-  /* ---------- Smooth page transitions (fade-out on leave) ----------
-     Lets the browser handle navigation natively (works in Instagram/Facebook
-     in-app browsers), just adds the fade class on the way out. View Transitions
-     API handles the fade in Chrome 126+ via CSS; this is the fallback. */
-  function initPageTransitions() {
-    document.addEventListener('click', (e) => {
-      const link = e.target.closest('a');
-      if (!link) return;
-      const url = link.getAttribute('href');
-      if (!url) return;
-      if (link.target === '_blank') return;
-      if (e.ctrlKey || e.metaKey || e.shiftKey || e.altKey) return;
-      if (e.button !== 0) return;
-      if (
-        url.startsWith('#') ||
-        url.startsWith('mailto:') ||
-        url.startsWith('tel:') ||
-        url.startsWith('javascript:')
-      ) return;
-      // Same-origin internal navigation — just trigger the fade, let browser navigate
-      document.body.classList.add('is-leaving');
-    });
-  }
+  /* ---------- Page transitions ----------
+     Fully disabled in JS. The @view-transition CSS rule handles cross-document
+     fades in Chrome 126+ for free; other browsers (including Instagram and
+     Facebook in-app WebViews) just snap to the new page. This is intentional
+     — touching the click event in any way was breaking in-app browser nav. */
+  function initPageTransitions() { /* no-op — see comment above */ }
 
   /* ---------- Mobile nav ---------- */
   function initNav() {
