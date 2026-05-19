@@ -192,9 +192,9 @@
         const num = String(i).padStart(2, '0');
         const tile = document.createElement('div');
         tile.className = 'tile';
-        tile.setAttribute('data-lightbox', `assets/images/transformations/${i}.jpg`);
+        tile.setAttribute('data-lightbox', `assets/images/transformations/${i}.jpg?v=2`);
         tile.innerHTML = `
-          <img src="assets/images/transformations/${i}.jpg" alt="Before and after body transformation of CMYH client ${num}" loading="lazy">
+          <img src="assets/images/transformations/${i}.jpg?v=2" alt="Before and after body transformation of CMYH client ${num}" loading="lazy">
           <div class="tile-label"><span>${num} — </span>Transformation</div>
         `;
         frag.appendChild(tile);
