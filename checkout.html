@@ -267,10 +267,15 @@
       if (!cart.length || !window.fbq) return;
       _icFired = true;
       window.fbq('track', 'InitiateCheckout', {
-        content_ids: cart.map(i => i.id),
-        contents: cart.map(i => ({ id: i.id, quantity: i.qty })),
-        num_items: cart.reduce((s, i) => s + i.qty, 0),
-        value: cart.reduce((s, i) => s + i.price * i.qty, 0),
+        content_ids: cart.map(i => String(i.id)),
+        content_type: 'product',
+        contents: cart.map(i => ({
+          id: String(i.id),
+          quantity: Number(i.qty),
+          item_price: Number(i.price)
+        })),
+        num_items: cart.reduce((s, i) => s + Number(i.qty), 0),
+        value: Number(cart.reduce((s, i) => s + i.price * i.qty, 0)),
         currency: 'EGP'
       });
     }
@@ -388,14 +393,20 @@
         if (!res.ok) throw new Error('Submission failed: HTTP ' + res.status);
 
         // Meta Pixel — Purchase event (the conversion that matters most for ad optimization)
+        // Strict types per Meta spec: value=number, currency=3-letter ISO, item_price per content
         if (window.fbq) {
           window.fbq('track', 'Purchase', {
-            content_ids: cart.map(i => i.id),
-            contents: cart.map(i => ({ id: i.id, quantity: i.qty })),
-            num_items: cart.reduce((s, i) => s + i.qty, 0),
-            value: total,
+            content_ids: cart.map(i => String(i.id)),
+            content_type: 'product',
+            contents: cart.map(i => ({
+              id: String(i.id),
+              quantity: Number(i.qty),
+              item_price: Number(i.price)
+            })),
+            num_items: cart.reduce((s, i) => s + Number(i.qty), 0),
+            value: Number(total),
             currency: 'EGP',
-            order_id: orderId
+            order_id: String(orderId)
           });
         }
 

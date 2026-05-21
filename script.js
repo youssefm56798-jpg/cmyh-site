@@ -238,10 +238,15 @@
     openCart();
     if (window.fbq) {
       window.fbq('track', 'AddToCart', {
-        content_ids: [item.id],
-        content_name: item.name,
+        content_ids: [String(item.id)],
+        content_name: String(item.name),
         content_type: 'product',
-        value: (item.price || 0) * (item.qty || 1),
+        contents: [{
+          id: String(item.id),
+          quantity: Number(item.qty || 1),
+          item_price: Number(item.price || 0)
+        }],
+        value: Number((item.price || 0) * (item.qty || 1)),
         currency: 'EGP'
       });
     }
