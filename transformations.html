@@ -37,11 +37,11 @@
       "name": "CMYH Transformations Gallery",
       "numberOfItems": 31,
       "associatedMedia": [
-        { "@type": "ImageObject", "contentUrl": "https://cmyh-onlinefitnesscoaching.com/assets/images/transformations/1.jpg", "name": "Client transformation 01 — before and after" },
-        { "@type": "ImageObject", "contentUrl": "https://cmyh-onlinefitnesscoaching.com/assets/images/transformations/5.jpg", "name": "Client transformation 05 — before and after" },
-        { "@type": "ImageObject", "contentUrl": "https://cmyh-onlinefitnesscoaching.com/assets/images/transformations/12.jpg", "name": "Client transformation 12 — before and after" },
-        { "@type": "ImageObject", "contentUrl": "https://cmyh-onlinefitnesscoaching.com/assets/images/transformations/18.jpg", "name": "Client transformation 18 — before and after" },
-        { "@type": "ImageObject", "contentUrl": "https://cmyh-onlinefitnesscoaching.com/assets/images/transformations/25.jpg", "name": "Client transformation 25 — before and after" }
+        { "@type": "ImageObject", "contentUrl": "https://cmyh-onlinefitnesscoaching.com/assets/images/transformations/1.webp", "name": "Client transformation 01 — before and after" },
+        { "@type": "ImageObject", "contentUrl": "https://cmyh-onlinefitnesscoaching.com/assets/images/transformations/5.webp", "name": "Client transformation 05 — before and after" },
+        { "@type": "ImageObject", "contentUrl": "https://cmyh-onlinefitnesscoaching.com/assets/images/transformations/12.webp", "name": "Client transformation 12 — before and after" },
+        { "@type": "ImageObject", "contentUrl": "https://cmyh-onlinefitnesscoaching.com/assets/images/transformations/18.webp", "name": "Client transformation 18 — before and after" },
+        { "@type": "ImageObject", "contentUrl": "https://cmyh-onlinefitnesscoaching.com/assets/images/transformations/25.webp", "name": "Client transformation 25 — before and after" }
       ]
     }
   }
@@ -184,7 +184,9 @@
   </a>
 
   <script>
-    // Build 30 transformation tiles — each opens the full-size composite in a lightbox
+    // Build 31 transformation tiles — each opens the full-size composite in a lightbox.
+    // Speed optimization: tiles use 400px WebP thumbnails (~5-13KB each); lightbox
+    // loads the full-size WebP only when clicked. JPG kept as fallback for old browsers.
     (function () {
       const grid = document.getElementById('gallery-grid');
       const frag = document.createDocumentFragment();
@@ -192,9 +194,16 @@
         const num = String(i).padStart(2, '0');
         const tile = document.createElement('div');
         tile.className = 'tile';
-        tile.setAttribute('data-lightbox', `assets/images/transformations/${i}.jpg?v=2`);
+        // Lightbox loads the full-size WebP (10x smaller than the JPG)
+        tile.setAttribute('data-lightbox', `assets/images/transformations/${i}.webp`);
+        // Tile shows the tiny thumbnail — fixed 16:9 size prevents CLS
         tile.innerHTML = `
-          <img src="assets/images/transformations/${i}.jpg?v=2" alt="Before and after body transformation of CMYH client ${num}" loading="lazy">
+          <img src="assets/images/transformations/thumbs/${i}.webp"
+               alt="Before and after body transformation of CMYH client ${num}"
+               width="400" height="225"
+               loading="${i <= 4 ? 'eager' : 'lazy'}"
+               decoding="async"
+               fetchpriority="${i <= 4 ? 'high' : 'low'}">
           <div class="tile-label"><span>${num} — </span>Transformation</div>
         `;
         frag.appendChild(tile);

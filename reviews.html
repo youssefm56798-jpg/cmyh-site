@@ -175,9 +175,9 @@
         const id = String(i).padStart(2, '0');
         const tile = document.createElement('figure');
         tile.className = 'review-tile';
-        tile.setAttribute('data-lightbox', `assets/images/reviews/r${id}.jpg`);
+        tile.setAttribute('data-lightbox', `assets/images/reviews/r${id}.webp`);
         tile.innerHTML = `
-          <img src="assets/images/reviews/r${id}.jpg" alt="Verified client review ${id}" loading="lazy">
+          <img src="assets/images/reviews/r${id}.webp" alt="Verified client review ${id}" width="600" height="900" loading="${i <= 6 ? 'eager' : 'lazy'}" decoding="async">
           <figcaption class="review-num">${id} / 64</figcaption>
         `;
         frag.appendChild(tile);
