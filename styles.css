@@ -1452,10 +1452,9 @@ p { color: var(--text-2); font-size: clamp(0.95rem, 1.05vw, 1.05rem); }
 }
 .product-includes li::before {
   content: ""; flex-shrink: 0;
-  width: 14px; height: 14px; margin-top: 2px;
-  background:
-    linear-gradient(45deg, transparent 45%, var(--red) 45% 55%, transparent 55%),
-    linear-gradient(-45deg, transparent 45%, var(--red) 45% 55%, transparent 55%);
+  width: 16px; height: 16px; margin-top: 2px;
+  /* Red checkmark — was an X cross before, but clients thought it meant "not included" */
+  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23E50914' stroke-width='3.2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M4 12l5 5L20 6'/%3E%3C/svg%3E") no-repeat center / contain;
 }
 .product-add {
   width: 100%; justify-content: center;
